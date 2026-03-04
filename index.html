@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HarmonicFlow — Musical Harmony Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Particle canvas background -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ── HEADER ── -->
+<header id="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="16" fill="none" stroke="#2dd4bf" stroke-width="1.5" opacity="0.4"/>
+          <circle cx="18" cy="18" r="10" fill="none" stroke="#2dd4bf" stroke-width="1.5" opacity="0.7"/>
+          <circle cx="18" cy="18" r="4" fill="#2dd4bf"/>
+          <line x1="18" y1="2" x2="18" y2="8" stroke="#2dd4bf" stroke-width="1.5"/>
+          <line x1="18" y1="28" x2="18" y2="34" stroke="#2dd4bf" stroke-width="1.5"/>
+          <line x1="2" y1="18" x2="8" y2="18" stroke="#2dd4bf" stroke-width="1.5"/>
+          <line x1="28" y1="18" x2="34" y2="18" stroke="#2dd4bf" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span class="logo-text">Harmonic<em>Flow</em></span>
+    </div>
+    <nav>
+      <button class="nav-btn active" data-section="explore" onclick="switchTab('explore')">Explore</button>
+      <button class="nav-btn" data-section="analyze" onclick="switchTab('analyze')">Analyze</button>
+      <button class="nav-btn" data-section="play" onclick="switchTab('play')">Play</button>
+      <button class="nav-btn" data-section="theory" onclick="switchTab('theory')">Theory</button>
+    </nav>
+    <div class="header-badge">
+      <span class="live-dot"></span> LIVE AUDIO
+    </div>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero" id="heroSection">
+  <div class="hero-content">
+    <div class="hero-tag">AI-Powered · Real-Time · Interactive</div>
+    <h1 class="hero-title">
+      Explore the<br>
+      <span class="gradient-text">Mathematics of Sound</span>
+    </h1>
+    <p class="hero-sub">Circle of Fifths. Coltrane's Giant Steps Matrix. Live synthesis. AI harmonic analysis. All in one place.</p>
+    <div class="hero-actions">
+      <button class="btn-cta" onclick="switchTab('explore')">Start Exploring</button>
+      <button class="btn-ghost" onclick="switchTab('play')">Open Synth ↗</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span>12</span>Notes</div>
+      <div class="stat-div"></div>
+      <div class="stat"><span>∞</span>Harmonics</div>
+      <div class="stat-div"></div>
+      <div class="stat"><span>AI</span>Analysis</div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <canvas id="heroCircle" width="420" height="420"></canvas>
+  </div>
+</section>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main-content">
+
+  <!-- EXPLORE TAB -->
+  <section id="tab-explore" class="tab-section active">
+    <div class="section-header">
+      <h2>Music Theory <span>Visualizations</span></h2>
+      <p>Click any note to hear it · See its harmonic relationships · Explore the math of music</p>
+    </div>
+
+    <div class="viz-grid">
+      <!-- Circle of Fifths -->
+      <div class="panel panel--glow">
+        <div class="panel-header">
+          <div class="panel-title">
+            <div class="panel-icon">◎</div>
+            Circle of Fifths
+          </div>
+          <div class="panel-controls">
+            <button class="toggle-btn" id="minorToggle" onclick="toggleMinorKeys()">Minor</button>
+            <button class="toggle-btn" id="chordToggle" onclick="toggleChordHighlight()">Chords</button>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="circleCanvas" width="380" height="380"></canvas>
+        </div>
+        <div class="note-display" id="circleNoteDisplay">
+          <div class="nd-placeholder">← Click a note on the circle</div>
+        </div>
+      </div>
+
+      <!-- Coltrane Matrix -->
+      <div class="panel panel--glow">
+        <div class="panel-header">
+          <div class="panel-title">
+            <div class="panel-icon">△</div>
+            Coltrane Matrix
+          </div>
+          <div class="panel-controls">
+            <button class="toggle-btn" onclick="rotateColtrane(-1)">↺</button>
+            <button class="toggle-btn" onclick="rotateColtrane(1)">↻</button>
+            <button class="toggle-btn" onclick="expandColtrane()">Expand</button>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="coltraneCanvas" width="380" height="380"></canvas>
+        </div>
+        <div class="note-display" id="coltraneNoteDisplay">
+          <div class="nd-placeholder">← Click a node to explore Giant Steps</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frequency Visualizer Strip -->
+    <div class="panel panel--wide" style="margin-top:20px">
+      <div class="panel-header">
+        <div class="panel-title"><div class="panel-icon">〰</div>Live Frequency Analyzer</div>
+        <div class="freq-readout" id="freqReadout">
+          <span class="freq-val" id="freqVal">—</span>
+          <span class="freq-unit">Hz</span>
+          <span class="freq-note" id="freqNote"></span>
+          <span class="freq-range" id="freqRange"></span>
+        </div>
+      </div>
+      <div class="viz-strip">
+        <div class="viz-box">
+          <div class="viz-label">SPECTRUM</div>
+          <canvas id="specCanvas" width="500" height="100"></canvas>
+        </div>
+        <div class="viz-box">
+          <div class="viz-label">WAVEFORM</div>
+          <canvas id="waveCanvas" width="500" height="100"></canvas>
+        </div>
+        <div class="viz-box viz-box--narrow">
+          <div class="viz-label">POSITION</div>
+          <div class="freq-meter-wrap">
+            <div class="freq-meter" id="freqMeterBar"></div>
+            <div class="freq-meter-labels">
+              <span>20</span><span>200</span><span>2k</span><span>20k</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALYZE TAB -->
+  <section id="tab-analyze" class="tab-section">
+    <div class="section-header">
+      <h2>AI Audio <span>Analysis</span></h2>
+      <p>Upload any audio snippet for deep harmonic breakdown powered by AI</p>
+    </div>
+
+    <div class="analyze-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-icon">↑</div>Upload Audio</div>
+        </div>
+        <div class="panel-body">
+          <div class="drop-zone" id="dropZone"
+               onclick="document.getElementById('fileInput').click()"
+               ondragover="ev.preventDefault();this.classList.add('drag-over')"
+               ondrop="handleDrop(event)"
+               ondragleave="this.classList.remove('drag-over')">
+            <div class="drop-icon">🎵</div>
+            <div class="drop-title">Drop audio here</div>
+            <div class="drop-sub">or click to browse · MP3, WAV, OGG, M4A</div>
+          </div>
+          <input type="file" id="fileInput" accept="audio/*" style="display:none" onchange="handleFileSelect(event)">
+          <div id="fileChip" class="file-chip hidden"></div>
+          <button class="btn-primary" id="analyzeBtn" disabled onclick="runAnalysis()">
+            <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/></svg>
+            Analyze Audio
+          </button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-icon">◈</div>Results</div>
+        </div>
+        <div class="panel-body" id="analysisResults">
+          <div class="results-empty">Upload an audio file to see harmonic analysis</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Insight Panel -->
+    <div class="panel panel--ai" id="aiPanel" style="margin-top:20px;display:none">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="panel-icon ai-spin">✦</div>
+          AI Harmonic Insight
+        </div>
+      </div>
+      <div class="ai-body" id="aiBody">
+        <div class="ai-loading">
+          <div class="dot-loader"><span></span><span></span><span></span></div>
+          Analyzing harmonic content…
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLAY TAB -->
+  <section id="tab-play" class="tab-section">
+    <div class="section-header">
+      <h2>Synthesizer <span>Keyboard</span></h2>
+      <p>Play notes · Build chords · Explore scales in real time</p>
+    </div>
+
+    <div class="synth-controls panel">
+      <div class="ctrl-group">
+        <label>WAVEFORM</label>
+        <div class="wave-btns" id="waveformBtns">
+          <button class="wave-btn active" data-wave="sine" onclick="setWave('sine',this)">Sine</button>
+          <button class="wave-btn" data-wave="triangle" onclick="setWave('triangle',this)">Triangle</button>
+          <button class="wave-btn" data-wave="sawtooth" onclick="setWave('sawtooth',this)">Saw</button>
+          <button class="wave-btn" data-wave="square" onclick="setWave('square',this)">Square</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <label>OCTAVE</label>
+        <div class="octave-ctrl">
+          <button onclick="changeOctave(-1)">−</button>
+          <span id="octaveVal">4</span>
+          <button onclick="changeOctave(1)">+</button>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <label>REVERB</label>
+        <input type="range" class="slider" id="reverbSlider" min="0" max="1" step="0.01" value="0.2" oninput="setReverb(this.value)">
+      </div>
+      <div class="ctrl-group">
+        <label>ATTACK</label>
+        <input type="range" class="slider" id="attackSlider" min="0.005" max="0.5" step="0.005" value="0.02">
+      </div>
+      <div class="ctrl-group">
+        <label>RELEASE</label>
+        <input type="range" class="slider" id="releaseSlider" min="0.05" max="3" step="0.05" value="0.8">
+      </div>
+    </div>
+
+    <!-- Keyboard -->
+    <div class="panel" style="margin-top:16px">
+      <div class="panel-header">
+        <div class="panel-title"><div class="panel-icon">♩</div>Piano Keyboard</div>
+        <div class="kb-hint">Computer keys: A W S E D F T G Y H U J</div>
+      </div>
+      <div class="keyboard-scroll">
+        <div class="keyboard" id="keyboard"></div>
+      </div>
+      <div class="active-note-display" id="activeNoteDisplay">
+        <span class="and-note" id="andNote">—</span>
+        <span class="and-freq" id="andFreq">—</span>
+        <span class="and-midi" id="andMidi">—</span>
+        <span class="and-range" id="andRange">—</span>
+      </div>
+    </div>
+
+    <!-- Chord + Scale builder -->
+    <div class="builder-grid" style="margin-top:20px">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title"><div class="panel-icon">♪</div>Chord Builder</div></div>
+        <div class="panel-body">
+          <div class="builder-row">
+            <label>Root</label>
+            <div class="pill-group" id="chordRootGroup"></div>
+          </div>
+          <div class="builder-row">
+            <label>Quality</label>
+            <div class="pill-group" id="chordQualityGroup"></div>
+          </div>
+          <div class="chord-result">
+            <span id="chordResultName">C Major</span>
+            <span id="chordResultNotes"></span>
+          </div>
+          <button class="btn-primary" onclick="playChord()">▶ Play Chord</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title"><div class="panel-icon">≋</div>Scale Explorer</div></div>
+        <div class="panel-body">
+          <div class="builder-row">
+            <label>Root</label>
+            <div class="pill-group" id="scaleRootGroup"></div>
+          </div>
+          <div class="builder-row">
+            <label>Scale</label>
+            <div class="pill-group" id="scaleTypeGroup"></div>
+          </div>
+          <div class="scale-notes-row" id="scaleNotesRow"></div>
+          <div class="scale-intervals" id="scaleIntervals"></div>
+          <button class="btn-primary" onclick="playScale()">▶ Play Scale</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THEORY TAB -->
+  <section id="tab-theory" class="tab-section">
+    <div class="section-header">
+      <h2>Music Theory <span>Reference</span></h2>
+      <p>Deep dives into harmonic concepts powering this app</p>
+    </div>
+    <div class="theory-grid">
+      <div class="theory-card">
+        <div class="tc-icon">◎</div>
+        <h3>Circle of Fifths</h3>
+        <p>The Circle of Fifths organizes all 12 pitch classes by ascending perfect fifths (or descending perfect fourths). Each step clockwise adds one sharp; each step counter-clockwise adds one flat. Keys adjacent on the circle share the most notes — they are closely related harmonically.</p>
+        <div class="tc-fact">Adjacent keys share 6 of 7 scale tones</div>
+      </div>
+      <div class="theory-card">
+        <div class="tc-icon">△</div>
+        <h3>Coltrane's Giant Steps</h3>
+        <p>John Coltrane's 1959 "Giant Steps" revolutionized jazz harmony. His matrix divides the octave into three equal parts (major thirds: B → G → E♭), creating a symmetrical cycle. Coltrane navigated these distant key centers at rapid tempo — a technique called "Coltrane changes."</p>
+        <div class="tc-fact">Major thirds divide the octave symmetrically into 3</div>
+      </div>
+      <div class="theory-card">
+        <div class="tc-icon">〰</div>
+        <h3>Frequency & Spectrum</h3>
+        <p>Musical notes correspond to specific frequencies (Hz). A4 = 440 Hz by modern standard. Each octave doubles the frequency. The audible spectrum spans roughly 20 Hz to 20,000 Hz. The harmonic overtone series — multiples of the fundamental — gives each instrument its unique timbre.</p>
+        <div class="tc-fact">A4 = 440 Hz · Each octave = ×2 frequency</div>
+      </div>
+      <div class="theory-card">
+        <div class="tc-icon">∿</div>
+        <h3>Waveform Types</h3>
+        <p>Sine waves produce pure tones with no harmonics. Triangle waves add odd harmonics softly. Sawtooth waves contain all harmonics (odd + even) and sound bright/buzzy. Square waves contain only odd harmonics, producing a hollow, reedy sound. Real instruments combine thousands of partials.</p>
+        <div class="tc-fact">Timbre = the shape of the waveform over time</div>
+      </div>
+      <div class="theory-card">
+        <div class="tc-icon">♩</div>
+        <h3>Chord Theory</h3>
+        <p>Chords are built by stacking thirds. A major triad: root + major third (4 semitones) + minor third (3 semitones). A minor triad: root + minor third + major third. Seventh chords add another third on top. The quality of intervals between notes defines the chord's emotional character.</p>
+        <div class="tc-fact">Major = bright · Minor = dark · Diminished = tense</div>
+      </div>
+      <div class="theory-card">
+        <div class="tc-icon">≋</div>
+        <h3>Modal Scales</h3>
+        <p>The seven modes derive from the major scale starting on different degrees. Ionian (major) sounds happy; Dorian sounds jazzy-minor; Phrygian sounds Spanish/dark; Lydian sounds ethereal; Mixolydian sounds bluesy; Aeolian (natural minor) sounds sad; Locrian sounds unstable/dissonant.</p>
+        <div class="tc-fact">7 modes · 12 keys · 84 possible modal scales</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Harmonic<em>Flow</em></div>
+    <p>Open source music theory explorer · Built for GitHub Pages</p>
+    <p style="opacity:0.4;font-size:0.72rem;margin-top:4px">Circle of Fifths · Coltrane Matrix · AI Harmony Analysis · Live Synthesis</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
