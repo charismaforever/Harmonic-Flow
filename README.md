@@ -2,7 +2,7 @@
 
 > AI-powered musical harmony explorer with Circle of Fifths, Coltrane Matrix, live synthesis, and audio analysis.
 
-**[Live Demo →](https://yourusername.github.io/harmonicflow)**
+**[Live Demo →](https://charismaforever.github.io/Harmonic-Flow/)**
 
 ---
 
@@ -38,14 +38,14 @@
 1. Fork or clone this repository
 2. Go to **Settings → Pages**
 3. Set source to **Deploy from branch** → `main` → `/ (root)`
-4. Your app will be live at `https://yourusername.github.io/harmonicflow`
+4. Your app will be live at `https://charismaforever.github.io/Harmonic-Flow/`
 
 ## Local Development
 
 Just open `index.html` in your browser — no build step required! It's pure HTML/CSS/JS.
 
 ```bash
-git clone https://github.com/yourusername/harmonicflow.git
+git clone https://github.com/charismaforever/Harmonic-Flow.git
 cd harmonicflow
 open index.html  # macOS
 # or: python3 -m http.server 8080
